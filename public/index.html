@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azure Voice Live · WebRTC POC</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Azure Voice Live <span>WebRTC POC</span></h1>
+      <p class="sub">Low-latency, real-time voice agent over WebRTC.</p>
+    </header>
+
+    <section class="panel">
+      <div class="selectors">
+        <label>Model
+          <select id="modelSelect"></select>
+        </label>
+        <label>Voice
+          <select id="voiceSelect"></select>
+        </label>
+        <label>Turn detection
+          <select id="vadSelect">
+            <option value="azure_semantic_vad">Azure semantic VAD</option>
+            <option value="azure_semantic_vad_multilingual">Azure semantic VAD (multilingual)</option>
+            <option value="server_vad">Server VAD (volume)</option>
+            <option value="none">None (manual)</option>
+          </select>
+        </label>
+        <label>Silence (ms)
+          <input id="silenceInput" type="number" min="0" max="5000" step="50" value="500" />
+        </label>
+        <label>Temperature <span id="tempValue">0.8</span>
+          <input id="tempInput" type="range" min="0" max="1" step="0.05" value="0.8" />
+        </label>
+      </div>
+      <div class="instructions">
+        <label for="instructionsInput">Instructions (system prompt)</label>
+        <textarea id="instructionsInput" rows="3">You are a helpful, friendly AI assistant. Respond in natural, concise, engaging spoken language.</textarea>
+      </div>
+      <div id="manualControls" class="manual hidden">
+        <span class="manual-label">Manual mode:</span>
+        <button id="respondBtn" disabled>Respond now</button>
+        <button id="interruptBtn" disabled>Interrupt</button>
+      </div>
+      <div class="controls">
+        <button id="connectBtn" class="primary">Start conversation</button>
+        <button id="hangupBtn" class="danger" disabled>End</button>
+        <span id="status" class="status idle">Idle</span>
+      </div>
+      <div class="meta">
+        <span>Auth: <b id="auth">…</b></span>
+      </div>
+      <div class="levels">
+        <div class="level-row">
+          <span class="level-label">You</span>
+          <div class="meter"><div id="micMeter" class="meter-fill mic"></div></div>
+        </div>
+        <div class="level-row">
+          <span class="level-label">Assistant</span>
+          <div class="meter"><div id="outMeter" class="meter-fill out"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Conversation</h2>
+      <div id="transcript" class="transcript" aria-live="polite"></div>
+      <form id="textForm" class="text-input">
+        <input id="textInput" type="text" placeholder="Type a message…" autocomplete="off" disabled />
+        <button id="sendBtn" type="submit" class="primary" disabled>Send</button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Event log</h2>
+      <div id="log" class="log"></div>
+    </section>
+
+    <audio id="remoteAudio" autoplay></audio>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
