@@ -35,7 +35,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI assistant for a real estate agent. Help manage the live customer call by providing real-time transcription, flagging key property details mentioned, and preparing a structured summary when the call ends. Be professional and concise.',
-      voice: 'en-US-Andrew:DragonHDLatestNeural',
+      voice: 'ash',
       temperature: 0.7,
     },
   },
@@ -72,7 +72,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI assistant for a healthcare triage nurse. Listen to the patient call, capture symptoms mentioned, and help organize the information into a structured intake format. Flag any urgent symptoms. Be empathetic and precise.',
-      voice: 'en-US-Emma:DragonHDLatestNeural',
+      voice: 'coral',
       temperature: 0.5,
     },
   },
@@ -109,7 +109,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are a real-time AI copilot for a customer support agent. Monitor the live call, detect customer sentiment, suggest helpful responses, and surface relevant knowledge base articles. Keep suggestions brief and actionable.',
-      voice: 'en-US-Ava:DragonHDLatestNeural',
+      voice: 'alloy',
       temperature: 0.6,
     },
   },
@@ -146,7 +146,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI sales coach providing live guidance during a sales call. Monitor the conversation for objection cues, suggest talking points, track talk-to-listen ratio, and prepare a deal summary. Be concise — the rep is on a live call.',
-      voice: 'en-US-Brian:DragonHDLatestNeural',
+      voice: 'verse',
       temperature: 0.75,
     },
   },
@@ -183,7 +183,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are a patient and encouraging language tutor. Help the student practice conversational English. Speak clearly at a moderate pace. Gently correct grammar and pronunciation by naturally repeating the correct form. Adapt to the student\'s level.',
-      voice: 'en-US-Ava:DragonHDLatestNeural',
+      voice: 'shimmer',
       temperature: 0.6,
     },
   },
@@ -220,7 +220,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI assistant for a lawyer conducting a client intake interview. Listen carefully, extract key facts (names, dates, events, claims), and organize them into a structured case summary. Flag any areas that need follow-up questions. Be precise and professional.',
-      voice: 'en-US-Andrew:DragonHDLatestNeural',
+      voice: 'echo',
       temperature: 0.5,
     },
   },
@@ -257,7 +257,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI assistant for a financial advisor. During client calls, surface relevant market data, flag compliance concerns, and prepare structured meeting minutes. Be precise with numbers and always note disclaimers.',
-      voice: 'en-US-Brian:DragonHDLatestNeural',
+      voice: 'cedar',
       temperature: 0.5,
     },
   },
@@ -294,7 +294,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI concierge assistant at a luxury hotel. Help the front desk agent capture guest requests, look up availability for restaurants and spa, and log special preferences. Be warm, professional, and efficient.',
-      voice: 'en-GB-SoniaNeural',
+      voice: 'sage',
       temperature: 0.7,
     },
   },
@@ -331,7 +331,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI assistant for an insurance claims adjuster taking a First Notice of Loss call. Capture all relevant details (date, location, parties, damages, injuries) and organize them into a structured claim form. Be empathetic — the caller may be distressed.',
-      voice: 'en-US-Emma:DragonHDLatestNeural',
+      voice: 'coral',
       temperature: 0.5,
     },
   },
@@ -368,7 +368,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI assistant for a recruiter conducting phone screens. Listen for skills, experience, and qualifications. Map responses to the job requirements. Prepare a structured candidate brief with strengths, concerns, and a hire/no-hire recommendation.',
-      voice: 'en-US-Ava:DragonHDLatestNeural',
+      voice: 'marin',
       temperature: 0.6,
     },
   },
@@ -405,7 +405,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI scribe for a physician during a telehealth visit. Listen to the conversation and draft a SOAP-format clinical note. Flag any drug interactions if medications are discussed. Generate a patient-friendly visit summary. Be medically precise.',
-      voice: 'en-US-Andrew:DragonHDLatestNeural',
+      voice: 'echo',
       temperature: 0.4,
     },
   },
@@ -442,7 +442,7 @@ const USE_CASES = [
     ],
     pocConfig: {
       instructions: 'You are an AI assistant for a field service technician. The technician will describe equipment issues verbally. Provide clear, step-by-step troubleshooting guidance. Reference relevant manual sections. Log the repair steps for the work order. Keep instructions concise — they\'re working hands-free.',
-      voice: 'en-US-Brian:DragonHDLatestNeural',
+      voice: 'ballad',
       temperature: 0.6,
     },
   },

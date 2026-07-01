@@ -45,6 +45,55 @@ let meterRaf = null;
 const partial = { user: null, assistant: null };
 let isLive = false;
 let serverVadType = 'server_vad'; // default; updated from session.created
+let serverVoiceProvider = null;   // 'openai' | 'azure', from session.created
+let azureVoices = [];             // Azure voices from server /api/config
+let azureDefaultVoice = null;     // default Azure voice name
+
+// Native-audio (speech-to-speech) models generate audio directly with OpenAI
+// voices and cannot switch to Azure TTS voices. Cascaded/text models use Azure
+// standard voices (a separate TTS step). See Voice Live "how to" docs.
+const NATIVE_AUDIO_MODELS = new Set([
+  'gpt-realtime', 'gpt-realtime-mini',
+  'gpt-4o-realtime-preview', 'gpt-4o-mini-realtime-preview',
+]);
+const OPENAI_VOICES = [
+  { name: 'alloy', label: 'Alloy' },
+  { name: 'ash', label: 'Ash' },
+  { name: 'ballad', label: 'Ballad' },
+  { name: 'coral', label: 'Coral' },
+  { name: 'echo', label: 'Echo' },
+  { name: 'sage', label: 'Sage' },
+  { name: 'shimmer', label: 'Shimmer' },
+  { name: 'verse', label: 'Verse' },
+  { name: 'marin', label: 'Marin' },
+  { name: 'cedar', label: 'Cedar' },
+];
+
+function isNativeAudioModel(model) {
+  return NATIVE_AUDIO_MODELS.has(model);
+}
+function voiceProviderForModel(model) {
+  return isNativeAudioModel(model) ? 'openai' : 'azure';
+}
+
+// Fill the voice dropdown with the voice set appropriate for the selected model.
+// Each option is tagged with its provider so session.update can format it and
+// avoid mixing OpenAI/Azure voices in one session.
+function populateVoices(preferred) {
+  const useOpenAI = isNativeAudioModel(els.modelSelect.value);
+  const list = useOpenAI ? OPENAI_VOICES : azureVoices;
+  const provider = useOpenAI ? 'openai' : 'azure';
+  const want = preferred || els.voiceSelect.value || (useOpenAI ? '' : azureDefaultVoice);
+  els.voiceSelect.innerHTML = '';
+  for (const v of list) {
+    const opt = new Option(v.label, v.name);
+    opt.dataset.provider = provider;
+    els.voiceSelect.add(opt);
+  }
+  if (want && [...els.voiceSelect.options].some((o) => o.value === want)) {
+    els.voiceSelect.value = want;
+  }
+}
 
 // Attach an AnalyserNode to a MediaStream and return it.
 function makeAnalyser(stream) {
@@ -153,25 +202,25 @@ async function loadConfig() {
       const opt = new Option(m.label, m.id, false, m.id === cfg.model);
       els.modelSelect.add(opt);
     }
-    for (const v of cfg.voices || []) {
-      const opt = new Option(v.label, v.name, false, v.name === cfg.defaultVoice);
-      els.voiceSelect.add(opt);
-    }
+    azureVoices = cfg.voices || [];
+    azureDefaultVoice = cfg.defaultVoice || (azureVoices[0] && azureVoices[0].name);
   } catch {
     els.auth.textContent = 'unknown';
   }
 
   // Apply scenario config from query params (linked from gallery).
   const params = new URLSearchParams(location.search);
-  if (params.has('instructions')) els.instructionsInput.value = params.get('instructions');
-  if (params.has('voice')) {
-    const v = params.get('voice');
-    if ([...els.voiceSelect.options].some((o) => o.value === v)) els.voiceSelect.value = v;
+  if (params.has('model')) {
+    const m = params.get('model');
+    if ([...els.modelSelect.options].some((o) => o.value === m)) els.modelSelect.value = m;
   }
+  if (params.has('instructions')) els.instructionsInput.value = params.get('instructions');
   if (params.has('temperature')) {
     const t = parseFloat(params.get('temperature'));
     if (Number.isFinite(t)) { els.tempInput.value = t; els.tempValue.textContent = t.toFixed(2); }
   }
+  // Populate voices for the selected model, honoring a requested voice.
+  populateVoices(params.get('voice'));
 }
 
 // --- Function calling (tools) ----------------------------------------------
@@ -248,14 +297,30 @@ function sessionUpdate() {
       'You are a helpful, friendly AI assistant. Respond in natural, concise, engaging spoken language.',
     input_audio_noise_reduction: { type: 'azure_deep_noise_suppression' },
     input_audio_echo_cancellation: { type: 'server_echo_cancellation' },
-    voice: {
-      name: els.voiceSelect.value || 'en-US-Ava:DragonHDLatestNeural',
-      type: 'azure-standard',
-      temperature: parseFloat(els.tempInput.value),
-    },
     tools: TOOLS,
     tool_choice: 'auto',
   };
+
+  // Voice: match the live session's provider. Native-audio models (gpt-realtime)
+  // use OpenAI voices (a plain string); cascaded/text models use Azure voices
+  // (an object). Sending a mismatched provider triggers
+  // "Cannot update voice from OpenAIVoice to AzureVoice", so we only set voice
+  // when it matches the provider the session was created with.
+  const selectedProvider =
+    els.voiceSelect.selectedOptions[0]?.dataset.provider ||
+    voiceProviderForModel(els.modelSelect.value);
+  const voiceName = els.voiceSelect.value;
+  if (voiceName && (!serverVoiceProvider || selectedProvider === serverVoiceProvider)) {
+    if (selectedProvider === 'openai') {
+      session.voice = voiceName;
+    } else {
+      session.voice = {
+        name: voiceName,
+        type: 'azure-standard',
+        temperature: parseFloat(els.tempInput.value),
+      };
+    }
+  }
 
   // Only include turn_detection when the type matches the server default
   // (server_vad), or omit it entirely to avoid the "type change not allowed" error.
@@ -279,6 +344,13 @@ function handleEvent(msg) {
         serverVadType = msg.session.turn_detection.type;
         els.vadSelect.value = serverVadType;
         refreshManualUI();
+      }
+      // Capture the session's voice provider (openai<->azure cannot be swapped).
+      {
+        const sv = msg.session?.voice;
+        if (typeof sv === 'string') serverVoiceProvider = 'openai';
+        else if (sv && typeof sv === 'object')
+          serverVoiceProvider = String(sv.type || '').startsWith('azure') ? 'azure' : 'openai';
       }
       sendControl(sessionUpdate());
       break;
@@ -449,6 +521,7 @@ function hangup() {
 
 els.connect.addEventListener('click', connect);
 els.hangup.addEventListener('click', hangup);
+els.modelSelect.addEventListener('change', () => populateVoices());
 els.vadSelect.addEventListener('change', () => {
   els.silenceInput.disabled = els.vadSelect.value === 'none';
   refreshManualUI();
