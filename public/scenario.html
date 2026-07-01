@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Live · Scenario</title>
+  <link rel="stylesheet" href="scenario.css" />
+</head>
+<body>
+  <div class="topbar">
+    <a href="gallery.html" class="back-link">← All scenarios</a>
+    <a id="advancedLink" href="index.html" class="advanced-link">Advanced mode</a>
+  </div>
+
+  <header class="scenario-hero">
+    <div class="hero-icon" id="scenarioIcon">🎧</div>
+    <span class="scenario-tag" id="scenarioTag">Scenario</span>
+    <h1 id="scenarioTitle">Loading scenario…</h1>
+    <p class="scenario-quote" id="scenarioQuote"></p>
+  </header>
+
+  <main class="scenario-main">
+    <!-- Live call panel -->
+    <section class="call-card" id="callCard">
+      <div class="call-status-row">
+        <span id="status" class="status idle">Idle</span>
+        <span class="auth-pill">Auth: <b id="auth">…</b></span>
+      </div>
+
+      <div class="call-button-wrap">
+        <button id="connectBtn" class="call-btn start">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/></svg>
+          <span>Start conversation</span>
+        </button>
+        <button id="hangupBtn" class="call-btn end hidden" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8s4-4 10-4 10 4 10 4"/><path d="M6 12l3 3 3-2 3 2 3-3"/></svg>
+          <span>End call</span>
+        </button>
+      </div>
+
+      <div class="levels">
+        <div class="level-row">
+          <span class="level-label">You</span>
+          <div class="meter"><div id="micMeter" class="meter-fill mic"></div></div>
+        </div>
+        <div class="level-row">
+          <span class="level-label">Assistant</span>
+          <div class="meter"><div id="outMeter" class="meter-fill out"></div></div>
+        </div>
+      </div>
+
+      <div class="text-input-row">
+        <form id="textForm" class="text-input">
+          <input id="textInput" type="text" placeholder="Type a message…" autocomplete="off" disabled />
+          <button id="sendBtn" type="submit" disabled>Send</button>
+        </form>
+      </div>
+
+      <details class="transcript-details" open>
+        <summary>Live transcript</summary>
+        <div id="transcript" class="transcript" aria-live="polite"></div>
+      </details>
+
+      <details class="log-details">
+        <summary>Event log</summary>
+        <div id="log" class="log"></div>
+      </details>
+    </section>
+
+    <!-- End-of-call summary panel -->
+    <section class="summary-card hidden" id="summaryCard">
+      <div class="summary-header">
+        <div class="summary-icon" id="summaryIcon"></div>
+        <div>
+          <span class="summary-eyebrow">End-of-call summary</span>
+          <h2 id="summaryTitle">Call Summary</h2>
+        </div>
+      </div>
+      <div class="summary-fields" id="summaryFields"></div>
+      <div class="summary-actions">
+        <button id="newCallBtn" class="primary">Start another call</button>
+        <a href="gallery.html" class="ghost-link">Back to all scenarios</a>
+      </div>
+    </section>
+  </main>
+
+  <audio id="remoteAudio" autoplay></audio>
+  <script type="module" src="scenario.js"></script>
+</body>
+</html>
