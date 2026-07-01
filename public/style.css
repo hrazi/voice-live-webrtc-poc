@@ -278,3 +278,72 @@ button:disabled { opacity: .4; cursor: not-allowed; }
 }
 .log .err { color: var(--danger); }
 .log .evt { color: #8fb4ff; }
+
+/* Scenario Gallery */
+.gallery-section {
+  margin-top: 18px;
+}
+.gallery-section h2 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+.gallery-hint {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.scenario-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.scenario-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform .1s ease, border-color .2s, box-shadow .2s;
+  position: relative;
+  overflow: hidden;
+}
+.scenario-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--card-accent, var(--accent));
+  border-radius: 14px 14px 0 0;
+  opacity: 0;
+  transition: opacity .2s;
+}
+.scenario-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--card-accent, var(--accent));
+  box-shadow: 0 4px 20px rgba(0,0,0,.3);
+}
+.scenario-card:hover::before { opacity: 1; }
+.scenario-card.active {
+  border-color: var(--card-accent, var(--accent));
+  box-shadow: 0 0 0 1px var(--card-accent, var(--accent));
+}
+.scenario-card.active::before { opacity: 1; }
+.scenario-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+  display: block;
+}
+.scenario-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.scenario-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+}
