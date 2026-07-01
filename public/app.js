@@ -159,6 +159,18 @@ async function loadConfig() {
   } catch {
     els.auth.textContent = 'unknown';
   }
+
+  // Apply scenario config from query params (linked from gallery).
+  const params = new URLSearchParams(location.search);
+  if (params.has('instructions')) els.instructionsInput.value = params.get('instructions');
+  if (params.has('voice')) {
+    const v = params.get('voice');
+    if ([...els.voiceSelect.options].some((o) => o.value === v)) els.voiceSelect.value = v;
+  }
+  if (params.has('temperature')) {
+    const t = parseFloat(params.get('temperature'));
+    if (Number.isFinite(t)) { els.tempInput.value = t; els.tempValue.textContent = t.toFixed(2); }
+  }
 }
 
 // --- Function calling (tools) ----------------------------------------------
