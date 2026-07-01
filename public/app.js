@@ -44,6 +44,7 @@ let meterRaf = null;
 
 const partial = { user: null, assistant: null };
 let isLive = false;
+let serverVadType = 'server_vad'; // default; updated from session.created
 
 // Attach an AnalyserNode to a MediaStream and return it.
 function makeAnalyser(stream) {
@@ -234,17 +235,12 @@ async function executeToolCall(item) {
 }
 
 // The session configuration sent once the VoiceLive session is established.
+// NOTE: The Voice Live API does not allow changing turn_detection.type after
+// session creation. We only send turn_detection params (silence, filler words)
+// when the selected type matches the server default; otherwise we omit it.
 function sessionUpdate() {
   const vadType = els.vadSelect.value;
   const silence = parseInt(els.silenceInput.value, 10);
-
-  let turn_detection = null;
-  if (vadType !== 'none') {
-    turn_detection = { type: vadType };
-    if (Number.isFinite(silence)) turn_detection.silence_duration_ms = silence;
-    // remove_filler_words is only supported on the Azure semantic VAD types.
-    if (vadType.startsWith('azure_semantic_vad')) turn_detection.remove_filler_words = true;
-  }
 
   const session = {
     instructions:
@@ -260,8 +256,15 @@ function sessionUpdate() {
     tools: TOOLS,
     tool_choice: 'auto',
   };
-  // Send turn_detection only when set; omit entirely for manual mode.
-  if (turn_detection) session.turn_detection = turn_detection;
+
+  // Only include turn_detection when the type matches the server default
+  // (server_vad), or omit it entirely to avoid the "type change not allowed" error.
+  if (vadType === serverVadType && vadType !== 'none') {
+    const td = { type: vadType };
+    if (Number.isFinite(silence)) td.silence_duration_ms = silence;
+    if (vadType.startsWith('azure_semantic_vad')) td.remove_filler_words = true;
+    session.turn_detection = td;
+  }
 
   return { type: 'session.update', session };
 }
@@ -271,6 +274,12 @@ function handleEvent(msg) {
   switch (msg.type) {
     case 'session.created':
       log('VoiceLive session created', 'evt');
+      // Capture the server's default turn detection type (cannot be changed).
+      if (msg.session?.turn_detection?.type) {
+        serverVadType = msg.session.turn_detection.type;
+        els.vadSelect.value = serverVadType;
+        refreshManualUI();
+      }
       sendControl(sessionUpdate());
       break;
     case 'session.updated':
