@@ -61,6 +61,11 @@ async function getUpstreamHeaders() {
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Gallery is the default landing page.
+app.get('/', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'gallery.html'));
+});
+
 // Expose only non-secret config to the browser.
 app.get('/api/config', (_req, res) => {
   res.json({
