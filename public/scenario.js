@@ -171,24 +171,48 @@ function appendTranscript(who, text, { final = false } = {}) {
 
 function sendControl(obj) {
   const payload = JSON.stringify(obj);
-  if (dataChannel && dataChannel.readyState === 'open') dataChannel.send(payload);
-  else if (signalWs && signalWs.readyState === WebSocket.OPEN) signalWs.send(payload);
+  if (dataChannel && dataChannel.readyState === 'open') {
+    dataChannel.send(payload);
+    log(`sent: ${obj.type}`, 'evt');
+  } else if (signalWs && signalWs.readyState === WebSocket.OPEN) {
+    signalWs.send(payload);
+    log(`sent (ws): ${obj.type}`, 'evt');
+  } else {
+    log(`send failed (no open channel): ${obj.type}`, 'err');
+  }
 }
+
+// The Voice Live API does not allow changing turn_detection.type after the
+// session is created (it errors and the *entire* session.update is rejected,
+// silently dropping instructions/voice/tools too). Capture the server's
+// default from session.created and only ever send that same type back.
+let serverVadType = 'server_vad';
 
 // Build the session.update payload for this scenario: fixed instructions,
 // OpenAI voice (native-audio model), and the per-scenario summary tool.
+//
+// Note: manually forcing a response via response.create after hangup is not
+// reliably honored by the Voice Live API in this session mode (verified
+// empirically — client-issued response.create/conversation.item.create calls
+// go unanswered outside of a VAD-triggered turn). So instead of forcing a
+// summary at hangup time, we instruct the model to proactively call
+// submit_call_summary *during* the natural conversation — updating it as
+// the call progresses and especially near any goodbye/wrap-up cue — so a
+// summary is very likely already captured by the time the user hangs up.
 function sessionUpdate() {
   return {
     type: 'session.update',
     session: {
       instructions:
         `${uc.pocConfig.instructions}\n\n` +
-        `When the call is wrapping up, call the submit_call_summary function exactly once with a structured recap.`,
+        `Throughout this call, proactively call the submit_call_summary function to keep a structured recap up to date — call it again any time new important details emerge, not just once. ` +
+        `Call it immediately (without waiting to be asked) whenever the conversation reaches a natural wrap-up point or the caller signals they are done (e.g. saying goodbye, thanks, that's all, etc.). ` +
+        `It is fine to call submit_call_summary multiple times during the call; each call should reflect the fullest picture so far.`,
       voice: uc.pocConfig.voice,
       temperature: uc.pocConfig.temperature,
       input_audio_noise_reduction: { type: 'azure_deep_noise_suppression' },
       input_audio_echo_cancellation: { type: 'server_echo_cancellation' },
-      turn_detection: { type: 'azure_semantic_vad', silence_duration_ms: 500, remove_filler_words: true },
+      turn_detection: { type: serverVadType, silence_duration_ms: 500 },
       tools: [SUMMARY_TOOL],
       tool_choice: 'auto',
     },
@@ -226,6 +250,7 @@ function handleEvent(msg) {
   switch (msg.type) {
     case 'session.created':
       log('VoiceLive session created', 'evt');
+      if (msg.session?.turn_detection?.type) serverVadType = msg.session.turn_detection.type;
       sendControl(sessionUpdate());
       break;
     case 'session.updated':
@@ -390,25 +415,34 @@ function teardown() {
   isLive = false;
 }
 
+function requestSummary() {
+  // Best-effort nudge: manually forcing a response via response.create is
+  // not reliably honored by the Voice Live API outside of a natural
+  // VAD-triggered turn, so this may go unanswered. That's fine — the model
+  // is instructed to keep submit_call_summary up to date throughout the
+  // call, so we usually already have a summary captured by hangup time.
+  sendControl({
+    type: 'conversation.item.create',
+    item: {
+      type: 'message',
+      role: 'user',
+      content: [{ type: 'input_text', text: 'The call is ending now. Call submit_call_summary with your best structured recap of the conversation so far.' }],
+    },
+  });
+  sendControl({ type: 'response.create' });
+}
+
 async function hangup() {
   els.hangup.disabled = true;
 
   if (isLive) {
     setStatus('Wrapping up…', 'wrapping');
-    // Nudge the model to finalize the structured summary before we close.
-    sendControl({
-      type: 'conversation.item.create',
-      item: {
-        type: 'message',
-        role: 'user',
-        content: [{ type: 'input_text', text: 'The call is ending now. Please call submit_call_summary right away.' }],
-      },
-    });
-    sendControl({
-      type: 'response.create',
-      response: { tool_choice: { type: 'function', name: 'submit_call_summary' } },
-    });
-    await waitForSummary(6000);
+    if (!summaryData) {
+      // Give the model one best-effort chance to finalize a summary, but
+      // don't block long since this often goes unanswered (see note above).
+      requestSummary();
+      await waitForSummary(3000);
+    }
   }
 
   teardown();
