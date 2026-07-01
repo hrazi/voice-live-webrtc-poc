@@ -224,6 +224,228 @@ const USE_CASES = [
       temperature: 0.5,
     },
   },
+  {
+    id: 'financial-advisory',
+    tag: 'Finance',
+    title: 'A financial advisor walking a client through their portfolio',
+    quote: {
+      text: '"While I explain market trends, the AI pulls up the exact charts and projections I need — before I even ask."',
+      source: 'WealthBridge Advisors',
+      icon: '💰',
+    },
+    features: [
+      {
+        icon: 'chart',
+        title: 'Live market data',
+        description: 'Surfaces real-time stock prices, fund performance, and benchmarks during the call.',
+      },
+      {
+        icon: 'shield',
+        title: 'Compliance guard',
+        description: 'Flags potential compliance or suitability issues in real time.',
+      },
+      {
+        icon: 'summary',
+        title: 'Meeting minutes',
+        description: 'Auto-generates a compliant record of advice given and decisions made.',
+      },
+      {
+        icon: 'calculator',
+        title: 'Scenario modeling',
+        description: 'Runs retirement or investment projections mentioned during the conversation.',
+      },
+    ],
+    pocConfig: {
+      instructions: 'You are an AI assistant for a financial advisor. During client calls, surface relevant market data, flag compliance concerns, and prepare structured meeting minutes. Be precise with numbers and always note disclaimers.',
+      voice: 'en-US-Brian:DragonHDLatestNeural',
+      temperature: 0.5,
+    },
+  },
+  {
+    id: 'hospitality',
+    tag: 'Hospitality',
+    title: 'A hotel concierge handling guest requests by phone',
+    quote: {
+      text: '"A guest calls asking for restaurant reservations, spa bookings, and a late checkout — the AI queues all three before I hang up."',
+      source: 'Meridian Hotels',
+      icon: '🏨',
+    },
+    features: [
+      {
+        icon: 'clipboard',
+        title: 'Request capture',
+        description: 'Logs every guest request with room number, priority, and category.',
+      },
+      {
+        icon: 'translate',
+        title: 'Multilingual support',
+        description: 'Real-time translation for international guests in 40+ languages.',
+      },
+      {
+        icon: 'lightning',
+        title: 'Instant dispatch',
+        description: 'Automatically routes tasks to housekeeping, F&B, or maintenance.',
+      },
+      {
+        icon: 'star',
+        title: 'Guest preferences',
+        description: 'Recalls returning guest history and preferences from the loyalty profile.',
+      },
+    ],
+    pocConfig: {
+      instructions: 'You are an AI concierge assistant at a luxury hotel. Help the front desk agent capture guest requests, look up availability for restaurants and spa, and log special preferences. Be warm, professional, and efficient.',
+      voice: 'en-GB-SoniaNeural',
+      temperature: 0.7,
+    },
+  },
+  {
+    id: 'insurance-claims',
+    tag: 'Insurance',
+    title: 'A claims adjuster taking a first notice of loss',
+    quote: {
+      text: '"The caller is stressed after an accident. The AI captures the details so I can focus on being human."',
+      source: 'Apex Underwriters',
+      icon: '🛡️',
+    },
+    features: [
+      {
+        icon: 'clipboard',
+        title: 'Structured FNOL',
+        description: 'Extracts date, location, parties, damages, and injuries into a claims form.',
+      },
+      {
+        icon: 'sentiment',
+        title: 'Empathy cues',
+        description: 'Detects caller distress and suggests empathetic phrasing for the adjuster.',
+      },
+      {
+        icon: 'search',
+        title: 'Policy lookup',
+        description: 'Pulls the caller\'s policy details and coverage limits in real time.',
+      },
+      {
+        icon: 'summary',
+        title: 'Claim draft',
+        description: 'Generates a preliminary claim file ready for review after the call.',
+      },
+    ],
+    pocConfig: {
+      instructions: 'You are an AI assistant for an insurance claims adjuster taking a First Notice of Loss call. Capture all relevant details (date, location, parties, damages, injuries) and organize them into a structured claim form. Be empathetic — the caller may be distressed.',
+      voice: 'en-US-Emma:DragonHDLatestNeural',
+      temperature: 0.5,
+    },
+  },
+  {
+    id: 'recruiting',
+    tag: 'Recruiting',
+    title: 'A recruiter screening candidates over a phone call',
+    quote: {
+      text: '"I used to spend 20 minutes writing up notes after each screen. Now the summary is ready the instant I hang up."',
+      source: 'TalentForge',
+      icon: '🤝',
+    },
+    features: [
+      {
+        icon: 'clipboard',
+        title: 'Skill extraction',
+        description: 'Identifies technologies, years of experience, and qualifications mentioned.',
+      },
+      {
+        icon: 'chart',
+        title: 'Scorecard auto-fill',
+        description: 'Maps candidate responses to predefined evaluation criteria.',
+      },
+      {
+        icon: 'cc',
+        title: 'Full transcript',
+        description: 'Searchable transcript for the hiring team to review later.',
+      },
+      {
+        icon: 'summary',
+        title: 'Candidate brief',
+        description: 'One-page summary with strengths, concerns, and recommended next steps.',
+      },
+    ],
+    pocConfig: {
+      instructions: 'You are an AI assistant for a recruiter conducting phone screens. Listen for skills, experience, and qualifications. Map responses to the job requirements. Prepare a structured candidate brief with strengths, concerns, and a hire/no-hire recommendation.',
+      voice: 'en-US-Ava:DragonHDLatestNeural',
+      temperature: 0.6,
+    },
+  },
+  {
+    id: 'telehealth',
+    tag: 'Telehealth',
+    title: 'A physician conducting a remote consultation',
+    quote: {
+      text: '"The AI drafts the clinical note while I talk to my patient. I review and sign — charting time cut in half."',
+      source: 'CareConnect Health',
+      icon: '🩻',
+    },
+    features: [
+      {
+        icon: 'mic',
+        title: 'Ambient documentation',
+        description: 'Generates clinical notes from natural doctor-patient conversation.',
+      },
+      {
+        icon: 'clipboard',
+        title: 'SOAP note drafting',
+        description: 'Structures findings into Subjective, Objective, Assessment, and Plan.',
+      },
+      {
+        icon: 'priority',
+        title: 'Drug interaction alerts',
+        description: 'Flags potential medication conflicts when prescriptions are discussed.',
+      },
+      {
+        icon: 'summary',
+        title: 'Patient summary',
+        description: 'Produces a plain-language visit summary for the patient portal.',
+      },
+    ],
+    pocConfig: {
+      instructions: 'You are an AI scribe for a physician during a telehealth visit. Listen to the conversation and draft a SOAP-format clinical note. Flag any drug interactions if medications are discussed. Generate a patient-friendly visit summary. Be medically precise.',
+      voice: 'en-US-Andrew:DragonHDLatestNeural',
+      temperature: 0.4,
+    },
+  },
+  {
+    id: 'field-service',
+    tag: 'Field Service',
+    title: 'A technician troubleshooting equipment on a hands-free call',
+    quote: {
+      text: '"My hands are inside a machine. I describe what I see, and the AI walks me through the fix step by step."',
+      source: 'IndusTech Services',
+      icon: '🔧',
+    },
+    features: [
+      {
+        icon: 'lightbulb',
+        title: 'Step-by-step guidance',
+        description: 'AI provides sequential repair instructions based on the technician\'s description.',
+      },
+      {
+        icon: 'search',
+        title: 'Manual lookup',
+        description: 'Surfaces relevant pages from equipment manuals and knowledge base.',
+      },
+      {
+        icon: 'mic',
+        title: 'Hands-free operation',
+        description: 'Fully voice-driven — no screen interaction required in the field.',
+      },
+      {
+        icon: 'summary',
+        title: 'Work order update',
+        description: 'Logs parts used, steps taken, and resolution into the service ticket.',
+      },
+    ],
+    pocConfig: {
+      instructions: 'You are an AI assistant for a field service technician. The technician will describe equipment issues verbally. Provide clear, step-by-step troubleshooting guidance. Reference relevant manual sections. Log the repair steps for the work order. Keep instructions concise — they\'re working hands-free.',
+      voice: 'en-US-Brian:DragonHDLatestNeural',
+      temperature: 0.6,
+    },
+  },
 ];
 
 // SVG icons for feature cards
@@ -241,6 +463,8 @@ const ICONS = {
   target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
   star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01z"/></svg>',
   search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>',
+  calculator: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8"/><path d="M8 10h2"/><path d="M14 10h2"/><path d="M8 14h2"/><path d="M14 14h2"/><path d="M8 18h2"/><path d="M14 18h2"/></svg>',
+  lightning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
 };
 
 // Tag colors for each vertical
@@ -251,6 +475,12 @@ const TAG_COLORS = {
   'Sales': '#f59e0b',
   'Education': '#10b981',
   'Legal': '#6366f1',
+  'Finance': '#0ea5e9',
+  'Hospitality': '#ec4899',
+  'Insurance': '#14b8a6',
+  'Recruiting': '#a855f7',
+  'Telehealth': '#ef4444',
+  'Field Service': '#78716c',
 };
 
 // Render the overview navigation cards
