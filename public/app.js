@@ -6,8 +6,6 @@
 //  4. Receive `rtc.call.sdp.created`, apply SDP answer -> audio flows.
 //  5. Use session.update + data channel for control/transcripts.
 
-import { SCENARIOS } from './scenarios.js';
-
 const els = {
   connect: document.getElementById('connectBtn'),
   hangup: document.getElementById('hangupBtn'),
@@ -471,60 +469,6 @@ els.textForm.addEventListener('submit', (e) => {
   log('Sent typed message', 'evt');
   els.textInput.value = '';
 });
-
-// --- Scenario Gallery -------------------------------------------------------
-const galleryEl = document.getElementById('scenarioGallery');
-let activeScenarioId = null;
-
-function renderGallery() {
-  galleryEl.innerHTML = '';
-  for (const s of SCENARIOS) {
-    const card = document.createElement('div');
-    card.className = 'scenario-card';
-    card.style.setProperty('--card-accent', s.color);
-    card.dataset.scenarioId = s.id;
-    card.innerHTML = `
-      <span class="scenario-icon">${s.icon}</span>
-      <div class="scenario-title">${s.title}</div>
-      <div class="scenario-subtitle">${s.subtitle}</div>
-    `;
-    card.addEventListener('click', () => applyScenario(s));
-    galleryEl.appendChild(card);
-  }
-}
-
-function applyScenario(scenario) {
-  // Highlight active card
-  activeScenarioId = scenario.id;
-  for (const card of galleryEl.querySelectorAll('.scenario-card')) {
-    card.classList.toggle('active', card.dataset.scenarioId === scenario.id);
-  }
-
-  // Apply settings to the UI controls
-  els.instructionsInput.value = scenario.instructions;
-
-  if (scenario.voice) {
-    const voiceOpt = [...els.voiceSelect.options].find((o) => o.value === scenario.voice);
-    if (voiceOpt) els.voiceSelect.value = scenario.voice;
-  }
-  if (scenario.temperature != null) {
-    els.tempInput.value = scenario.temperature;
-    els.tempValue.textContent = scenario.temperature.toFixed(2);
-  }
-  if (scenario.vad) {
-    els.vadSelect.value = scenario.vad;
-    els.silenceInput.disabled = scenario.vad === 'none';
-    refreshManualUI();
-  }
-  if (scenario.silenceMs != null) {
-    els.silenceInput.value = scenario.silenceMs;
-  }
-
-  // Scroll the config panel into view
-  els.instructionsInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
-
-renderGallery();
 
 refreshManualUI();
 loadConfig();
